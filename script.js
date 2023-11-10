@@ -6,37 +6,65 @@ $form.forEach((form, index) => {
     form.addEventListener('submit', (event) => {
         event.preventDefault();
 
+ //CREATE
+
         const inputText = $inputText[index];
         const ulList = $ulList[index];
 
         if (inputText.value !== '') {
-        const liElements = document.createElement('li');
-        liElements.classList.add('li');
+            const liElement = document.createElement('li');
+            liElement.classList.add('li');
 
-        const checkBox = document.createElement('input');
-        checkBox.type = 'checkbox';
-        checkBox.title = 'Concluído';
-        checkBox.classList.add('checkBox');
+            const checkBox = document.createElement('input');
+            checkBox.type = 'checkbox';
+            checkBox.title = 'Concluído';
+            checkBox.classList.add('checkBox');
 
-        const divButtons = document.createElement('div');
-        divButtons.classList.add('divButtons');
+            const divButtons = document.createElement('div');
+            divButtons.classList.add('divButtons');
 
-        const editButton = document.createElement('button');
-        editButton.title = 'Editar';
-        editButton.classList.add('editButton');
+            const editButton = document.createElement('button');
+            editButton.title = 'Editar';
+            editButton.classList.add('editButton');
 
-        const deleteButton = document.createElement('button');
-        deleteButton.title = 'Excluir'; 
-        deleteButton.classList.add('deleteButton');
+            const deleteButton = document.createElement('button');
+            deleteButton.title = 'Excluir'; 
+            deleteButton.classList.add('deleteButton');
 
-        liElements.appendChild(checkBox);
-        liElements.append(inputText.value);
-        divButtons.appendChild(editButton);
-        divButtons.appendChild(deleteButton);
-        liElements.append(divButtons)
-        
-        ulList.appendChild(liElements);
-        inputText.value = '';
+            liElement.appendChild(checkBox);
+            liElement.append(inputText.value);
+            divButtons.appendChild(editButton);
+            divButtons.appendChild(deleteButton);
+            liElement.append(divButtons)
+            ulList.appendChild(liElement);
+
+            inputText.value = '';
         }
+
+//READ
+
+        document.querySelectorAll('.list').forEach((list) => {
+            list.addEventListener('click', (event) => {
+                if (event.target.matches('.checkBox')) {
+                    
+                    const liElement = event.target.parentElement;
+
+                    if (event.target.checked) {
+                        liElement.style.textDecoration = 'line-through';
+                        liElement.style.textDecorationColor = '#1d1d1d';
+                        liElement.style.color = '#828282';
+                    } else {
+                        liElement.style.textDecoration = 'none';
+                        liElement.style.color = '#1d1d1d';
+                    }
+                }
+            });
+        });
+
+//UPDATE
+
+//DELETE
+
+
     });
 });
