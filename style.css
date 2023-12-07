@@ -132,8 +132,8 @@ main {
 }
 
 .addButton {
-    width: 26px;
-    height: 26px;
+    width: 30px;
+    height: 30px;
     cursor: pointer;
     position: relative;
 }
@@ -144,7 +144,7 @@ main {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 26px;
+    font-size: 30px;
     font-family: 'Rubik', sans-serif;
     color: #5e5e5e;
 }
@@ -166,6 +166,7 @@ main {
 .li {
     padding: 2px 5px;
     width: 100%;
+    min-height: 30px;
     display: flex;
     align-items: center;
     gap: 5px;
@@ -200,6 +201,13 @@ main {
     opacity: 1;
  }
 
+ .formEdit {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+ }
+
 .divButtons {
     display: flex;
     justify-content: end;
@@ -221,6 +229,10 @@ main {
 
 .editButton:hover {
     background-color: #ffff7c;
+}
+
+.editButtonConfirm:hover {
+    background-color: #a5eea0;
 }
 
 .deleteButton {
