@@ -5,11 +5,11 @@ const $ulList = document.querySelectorAll('.list');
 const getLocalStorage = () => JSON.parse(localStorage.getItem('db_task')) ?? [];
 const setLocalStorage = (dbTask) => localStorage.setItem('db_task', JSON.stringify(dbTask));
 
-const createLocalStorage = (task) => {
+const createLocalStorage = (task, index) => {
     const dbTask = getLocalStorage();
-    dbTask.push(task);
+    dbTask.push({ value: task, index });
     setLocalStorage(dbTask);
-}
+};
 
 const readTask = () => getLocalStorage();
 
@@ -25,6 +25,54 @@ const deleteTask = (index) => {
         setLocalStorage(dbTask);
 }
 
+const createElement = (ulList, task) => {
+    const liElement = document.createElement('li');
+    liElement.classList.add('li');
+
+    const checkBox = document.createElement('input');
+    checkBox.type = 'checkbox';
+    checkBox.title = 'Concluir';
+    checkBox.classList.add('checkBox');
+
+    const formEdit = document.createElement('form');
+    formEdit.classList.add('formEdit');
+
+    const spanText = document.createElement('span');
+    spanText.textContent = task;
+    spanText.classList.add('spanText');
+
+    const divButtons = document.createElement('div');
+    divButtons.classList.add('divButtons');
+
+    const editButton = document.createElement('button');
+    editButton.type = 'submit';
+    editButton.title = 'Editar';
+    editButton.classList.add('editButton');
+
+    const deleteButton = document.createElement('button');
+    deleteButton.title = 'Excluir';
+    deleteButton.classList.add('deleteButton');
+
+    liElement.appendChild(checkBox);
+    divButtons.appendChild(editButton);
+    divButtons.appendChild(deleteButton);
+    formEdit.append(spanText);
+    formEdit.appendChild(divButtons);
+    liElement.append(formEdit);
+    ulList.appendChild(liElement);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const dbTask = readTask();
+
+    $ulList.forEach((ulList, index) => {
+        const tasksForList = dbTask.filter(task => task.index === index);
+        tasksForList.forEach(task => {
+            createElement(ulList, task.value);
+        });
+    });
+});
+
 $form.forEach((form, index) => {
     form.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -33,51 +81,9 @@ $form.forEach((form, index) => {
         const ulList = $ulList[index];
 
         const trimmedValue = inputText.value.trim(); 
-
-        const createRow = () => {
-            const dbTask = readTask();
-            const lastTask = dbTask[dbTask.length - 1];
-
-            const liElement = document.createElement('li');
-            liElement.setAttribute('data-storage', readTask().length - 1);
-            liElement.classList.add('li');
-
-            const checkBox = document.createElement('input');
-            checkBox.type = 'checkbox';
-            checkBox.title = 'Concluir';
-            checkBox.classList.add('checkBox');
-
-            const formEdit = document.createElement('form');
-            formEdit.classList.add('formEdit');
-
-            const spanText = document.createElement('span');
-            spanText.textContent = lastTask;
-            spanText.classList.add('spanText');
-
-            const divButtons = document.createElement('div');
-            divButtons.classList.add('divButtons');
-
-            const editButton = document.createElement('button');
-            editButton.type = 'submit';
-            editButton.title = 'Editar';
-            editButton.classList.add('editButton');
-
-            const deleteButton = document.createElement('button');
-            deleteButton.title = 'Excluir';
-            deleteButton.classList.add('deleteButton');
-
-            liElement.appendChild(checkBox);
-            divButtons.appendChild(editButton);
-            divButtons.appendChild(deleteButton);
-            formEdit.append(spanText);
-            formEdit.appendChild(divButtons);
-            liElement.append(formEdit);
-            ulList.appendChild(liElement);
-        };
-
         if (trimmedValue !== '') {
-            createLocalStorage(trimmedValue);
-            createRow();
+            createLocalStorage(trimmedValue, index);
+            createElement(ulList, trimmedValue);
 
             inputText.value = '';
         }
