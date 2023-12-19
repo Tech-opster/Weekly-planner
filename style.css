@@ -201,6 +201,12 @@ main {
     opacity: 1;
  }
 
+ .checkedStyle {
+    text-decoration: line-through;
+    text-decoration-color: #1d1d1d;
+    color: #828282;
+ }
+
  .formEdit {
     width: 100%;
     display: flex;

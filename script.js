@@ -13,17 +13,17 @@ const createLocalStorage = (task, index) => {
 
 const readTask = () => getLocalStorage();
 
-const updateTask = (index, task) => {
+const updateTask = (task, index) => {
     const dbTask = readTask();
-        dbTask[index] = task;
-        setLocalStorage(dbTask);
-}
+    dbTask[index] = task;
+    setLocalStorage(dbTask);
+};
 
 const deleteTask = (index) => {
     const dbTask = readTask();
-        dbTask.splice(index, 1);
-        setLocalStorage(dbTask);
-}
+    dbTask.splice(index, 1);
+    setLocalStorage(dbTask);
+};
 
 const createElement = (ulList, task) => {
     const liElement = document.createElement('li');
@@ -60,6 +60,8 @@ const createElement = (ulList, task) => {
     formEdit.appendChild(divButtons);
     liElement.append(formEdit);
     ulList.appendChild(liElement);
+
+    return liElement;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -79,9 +81,8 @@ $form.forEach((form, index) => {
 
         const inputText = $inputText[index];
         const ulList = $ulList[index];
-
-        const trimmedValue = inputText.value.trim(); 
-        if (trimmedValue !== '') {
+        const trimmedValue = inputText.value.trim();
+        if (trimmedValue) {
             createLocalStorage(trimmedValue, index);
             createElement(ulList, trimmedValue);
 
@@ -94,7 +95,7 @@ document.addEventListener('click', (event) => {
     const target = event.target;
     const liElement = target.closest('.li');
     const formEdit = target.closest('.formEdit');
-    
+
     if (!liElement) {
         return;
     }
@@ -104,12 +105,9 @@ document.addEventListener('click', (event) => {
 
     if (target.classList.contains('checkBox')) {
         if (target.checked) {
-            spanText.style.textDecoration = 'line-through';
-            spanText.style.textDecorationColor = '#1d1d1d';
-            spanText.style.color = '#828282';
+            spanText.classList.add('checkedStyle');
         } else {
-            spanText.style.textDecoration = 'none';
-            spanText.style.color = '#1d1d1d';
+            spanText.classList.remove('checkedStyle');
         }
     }
 
@@ -133,19 +131,23 @@ document.addEventListener('click', (event) => {
             target.title = 'Confirmar';
             target.classList.add('editButtonConfirm');
         } else {
-            const spanText = document.createElement('span');
-            spanText.textContent = editableElement.value;
-            spanText.classList.add('spanText');
+            let trimmedValue = editableElement.value.trim();
 
-            formEdit.replaceChild(spanText, editableElement);
-            checkBox.checked = false;
-            checkBox.style.display = 'block';
+            if (trimmedValue) {
+                const spanText = document.createElement('span');
+                spanText.textContent = trimmedValue;
+                spanText.classList.add('spanText');
 
-            target.style.backgroundImage = 'url(Media/edit_FILL0_wght400_GRAD0_opsz24.svg)';
-            target.title = 'Editar';
-            target.classList.remove('editButtonConfirm');
+                formEdit.replaceChild(spanText, editableElement);
+                checkBox.checked = false;
+                checkBox.style.display = 'block';
 
-            updateTask();
+                target.style.backgroundImage = 'url(Media/edit_FILL0_wght400_GRAD0_opsz24.svg)';
+                target.title = 'Editar';
+                target.classList.remove('editButtonConfirm');
+
+                updateTask();
+            }
         }
     }
 
@@ -157,7 +159,7 @@ document.addEventListener('click', (event) => {
 
             if (deleteConfirm) {
                 liElement.remove();
-        
+
                 deleteTask();
             }
         } else {
@@ -165,7 +167,7 @@ document.addEventListener('click', (event) => {
 
             if (deleteConfirm) {
                 liElement.remove();
-        
+
                 deleteTask();
             }
         }
