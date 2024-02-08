@@ -2,29 +2,35 @@ const $form = document.querySelectorAll('.form');
 const $inputText = document.querySelectorAll('.task');
 const $ulList = document.querySelectorAll('.list');
 
-const getLocalStorage = () => JSON.parse(localStorage.getItem('db_task')) ?? [];
+// LOCAL STORAGE
 const setLocalStorage = (dbTask) => localStorage.setItem('db_task', JSON.stringify(dbTask));
+const getLocalStorage = () => JSON.parse(localStorage.getItem('db_task')) ?? [];
 
+// CRIAR LOCAL STORAGE
 const createLocalStorage = (task, index) => {
     const dbTask = getLocalStorage();
     dbTask.push({ value: task, index });
     setLocalStorage(dbTask);
 };
 
+// LER LOCAL STORAGE
 const readTask = () => getLocalStorage();
 
+// MODIFICAR LOCAL STORAGE
 const updateTask = (task, index) => {
     const dbTask = readTask();
     dbTask[index] = task;
     setLocalStorage(dbTask);
 };
 
+// DELETAR LOCAL STORAGE
 const deleteTask = (index) => {
     const dbTask = readTask();
     dbTask.splice(index, 1);
     setLocalStorage(dbTask);
 };
 
+// TAREFAS DINÂMICAS
 const createElement = (ulList, task) => {
     const liElement = document.createElement('li');
     liElement.classList.add('li');
@@ -64,6 +70,7 @@ const createElement = (ulList, task) => {
     return liElement;
 }
 
+// CARREGAR DOM
 document.addEventListener('DOMContentLoaded', () => {
     const dbTask = readTask();
 
@@ -75,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// EVENTO CRIAR TAREFAS
 $form.forEach((form, index) => {
     form.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -91,18 +99,20 @@ $form.forEach((form, index) => {
     });
 });
 
+// EVENTOS MODIFICAR TAREFAS
 document.addEventListener('click', (event) => {
     const target = event.target;
     const liElement = target.closest('.li');
     const formEdit = target.closest('.formEdit');
 
-    if (!liElement) {
-        return;
-    }
+    if (formEdit) var editableElement = formEdit.querySelector('[data-editable="true"]');
+
+    if (!liElement) return;
 
     const checkBox = liElement.querySelector('.checkBox');
     const spanText = liElement.querySelector('.spanText');
-
+    
+// EVENTO CHECKBOX
     if (target.classList.contains('checkBox')) {
         if (target.checked) {
             spanText.classList.add('checkedStyle');
@@ -111,17 +121,18 @@ document.addEventListener('click', (event) => {
         }
     }
 
+// EVENTO BOTÃO EDITAR
     if (target.classList.contains('editButton')) {
         event.preventDefault();
 
+        // CRIAR INPUT TEXT
         const input = document.createElement('input');
         input.type = 'text';
         input.title = 'Reescrever tarefa';
         input.classList.add('task');
         input.setAttribute('data-editable', 'true');
 
-        const editableElement = formEdit.querySelector('[data-editable="true"]');
-
+        // SUBSTITUIR SPAN POR INPUT TEXT 
         if (!editableElement) {
             input.value = spanText.textContent;
             formEdit.replaceChild(input, spanText);
@@ -130,6 +141,8 @@ document.addEventListener('click', (event) => {
             target.style.backgroundImage = 'url(Media/done_FILL0_wght400_GRAD0_opsz24.svg)';
             target.title = 'Confirmar';
             target.classList.add('editButtonConfirm');
+            
+        // SUBSTITUIR INPUT TEXT POR SPAN
         } else {
             let trimmedValue = editableElement.value.trim();
 
@@ -151,25 +164,16 @@ document.addEventListener('click', (event) => {
         }
     }
 
+// EVENTO BOTÃO DELETAR
     if (target.classList.contains('deleteButton')) {
-        const editableElement = formEdit.querySelector('[data-editable="true"]');
-
         if (editableElement) {
             let deleteConfirm = confirm(`Você deseja excluir a tarefa ${editableElement.value}?`);
 
-            if (deleteConfirm) {
-                liElement.remove();
-
-                deleteTask();
-            }
+            deleteConfirm && (liElement.remove(), deleteTask());
         } else {
             let deleteConfirm = confirm(`Você deseja excluir a tarefa ${spanText.innerText}?`);
 
-            if (deleteConfirm) {
-                liElement.remove();
-
-                deleteTask();
-            }
+            deleteConfirm && (liElement.remove(), deleteTask());
         }
     }
 });
