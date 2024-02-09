@@ -30,7 +30,7 @@ const deleteTask = (index) => {
     setLocalStorage(dbTask);
 };
 
-// TAREFAS DINÂMICAS
+// ELEMENTOS DINÂMICOS
 const createElement = (ulList, task) => {
     const liElement = document.createElement('li');
     liElement.classList.add('li');
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// EVENTO CRIAR TAREFAS
+// EVENTO CRIAR ELEMENTOS DINÂMICOS
 $form.forEach((form, index) => {
     form.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -90,6 +90,7 @@ $form.forEach((form, index) => {
         const inputText = $inputText[index];
         const ulList = $ulList[index];
         const trimmedValue = inputText.value.trim();
+        
         if (trimmedValue) {
             createLocalStorage(trimmedValue, index);
             createElement(ulList, trimmedValue);
@@ -99,7 +100,7 @@ $form.forEach((form, index) => {
     });
 });
 
-// EVENTOS MODIFICAR TAREFAS
+// EVENTOS MODIFICAR ELEMENTOS DINÂMICOS
 document.addEventListener('click', (event) => {
     const target = event.target;
     const liElement = target.closest('.li');
