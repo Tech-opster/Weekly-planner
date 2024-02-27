@@ -1,3 +1,4 @@
+// VARIÁVEIS GLOBAIS HTML
 const $form = document.querySelectorAll('.form');
 const $inputText = document.querySelectorAll('.task');
 const $ulList = document.querySelectorAll('.list');
@@ -6,34 +7,33 @@ const $ulList = document.querySelectorAll('.list');
 const setLocalStorage = (dbTask) => localStorage.setItem('db_task', JSON.stringify(dbTask));
 const getLocalStorage = () => JSON.parse(localStorage.getItem('db_task')) ?? [];
 
+// LER LOCAL STORAGE
+const readTask = () => getLocalStorage();
+const dbTask = readTask();
+
 // CRIAR LOCAL STORAGE
-const createLocalStorage = (task, index) => {
-    const dbTask = getLocalStorage();
-    dbTask.push({ value: task, index });
+const createLocalStorage = (trimmedValue, index, liIndex) => {
+    dbTask.push({ value: trimmedValue, index, liIndex });
     setLocalStorage(dbTask);
 };
 
-// LER LOCAL STORAGE
-const readTask = () => getLocalStorage();
-
 // MODIFICAR LOCAL STORAGE
 const updateTask = (task, index) => {
-    const dbTask = readTask();
     dbTask[index] = task;
     setLocalStorage(dbTask);
 };
 
 // DELETAR LOCAL STORAGE
 const deleteTask = (index) => {
-    const dbTask = readTask();
     dbTask.splice(index, 1);
     setLocalStorage(dbTask);
 };
 
 // ELEMENTOS DINÂMICOS
-const createElement = (ulList, task) => {
+const createElement = (ulList, trimmedValue, liIndex) => {
     const liElement = document.createElement('li');
     liElement.classList.add('li');
+    liElement.setAttribute('data-index', liIndex);
 
     const checkBox = document.createElement('input');
     checkBox.type = 'checkbox';
@@ -44,7 +44,7 @@ const createElement = (ulList, task) => {
     formEdit.classList.add('formEdit');
 
     const spanText = document.createElement('span');
-    spanText.textContent = task;
+    spanText.textContent = trimmedValue;
     spanText.classList.add('spanText');
 
     const divButtons = document.createElement('div');
@@ -72,12 +72,11 @@ const createElement = (ulList, task) => {
 
 // CARREGAR DOM
 document.addEventListener('DOMContentLoaded', () => {
-    const dbTask = readTask();
-
     $ulList.forEach((ulList, index) => {
-        const tasksForList = dbTask.filter(task => task.index === index);
-        tasksForList.forEach(task => {
-            createElement(ulList, task.value);
+        const tasksIndex = dbTask.filter(task => task.index === index);
+
+        tasksIndex.forEach(task => {
+            createElement(ulList, task.value, task.liIndex);
         });
     });
 });
@@ -88,12 +87,13 @@ $form.forEach((form, index) => {
         event.preventDefault();
 
         const inputText = $inputText[index];
-        const ulList = $ulList[index];
         const trimmedValue = inputText.value.trim();
-        
+        const ulList = $ulList[index];
+        const liIndex = ulList.childNodes.length;
+
         if (trimmedValue) {
-            createLocalStorage(trimmedValue, index);
-            createElement(ulList, trimmedValue);
+            createLocalStorage(trimmedValue, index, liIndex);
+            createElement(ulList, trimmedValue, liIndex);
 
             inputText.value = '';
         }
@@ -103,6 +103,7 @@ $form.forEach((form, index) => {
 // EVENTOS MODIFICAR ELEMENTOS DINÂMICOS
 document.addEventListener('click', (event) => {
     const target = event.target;
+    const notePad = target.closest('.notePad');
     const liElement = target.closest('.li');
     const formEdit = target.closest('.formEdit');
 
@@ -112,8 +113,8 @@ document.addEventListener('click', (event) => {
 
     const checkBox = liElement.querySelector('.checkBox');
     const spanText = liElement.querySelector('.spanText');
-    
-// EVENTO CHECKBOX
+
+    // EVENTO CHECKBOX
     if (target.classList.contains('checkBox')) {
         if (target.checked) {
             spanText.classList.add('checkedStyle');
@@ -122,7 +123,7 @@ document.addEventListener('click', (event) => {
         }
     }
 
-// EVENTO BOTÃO EDITAR
+    // EVENTO BOTÃO EDITAR
     if (target.classList.contains('editButton')) {
         event.preventDefault();
 
@@ -142,8 +143,8 @@ document.addEventListener('click', (event) => {
             target.style.backgroundImage = 'url(Media/done_FILL0_wght400_GRAD0_opsz24.svg)';
             target.title = 'Confirmar';
             target.classList.add('editButtonConfirm');
-            
-        // SUBSTITUIR INPUT TEXT POR SPAN
+
+            // SUBSTITUIR INPUT TEXT POR SPAN
         } else {
             let trimmedValue = editableElement.value.trim();
 
@@ -165,16 +166,27 @@ document.addEventListener('click', (event) => {
         }
     }
 
-// EVENTO BOTÃO DELETAR
+    // EVENTO BOTÃO DELETAR
     if (target.classList.contains('deleteButton')) {
-        if (editableElement) {
-            let deleteConfirm = confirm(`Você deseja excluir a tarefa ${editableElement.value}?`);
+        event.preventDefault();
 
-            deleteConfirm && (liElement.remove(), deleteTask());
-        } else {
-            let deleteConfirm = confirm(`Você deseja excluir a tarefa ${spanText.innerText}?`);
+        const notePadAttribute = notePad.getAttribute('data-index');
+        const liAttribute = liElement.getAttribute('data-index');
 
-            deleteConfirm && (liElement.remove(), deleteTask());
-        }
+        dbTask.forEach((task, index) => {
+            console.log(task.index, task.liIndex);
+            if (notePadAttribute == task.index && liAttribute == task.liIndex) {
+                if (editableElement) {
+                    let deleteConfirm = confirm(`Você deseja excluir a tarefa ${editableElement.value}?`);
+
+                    deleteConfirm && (deleteTask(index), liElement.remove());
+                } else {
+                    let deleteConfirm = confirm(`Você deseja excluir a tarefa ${spanText.innerText}?`);
+
+                    deleteConfirm && (deleteTask(index), liElement.remove());
+                }
+            }
+        }) 
+        console.log(notePadAttribute, liAttribute);
     }
 });
