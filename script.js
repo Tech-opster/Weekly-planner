@@ -1,10 +1,14 @@
 const $form = document.querySelectorAll('.form');
 const $inputText = document.querySelectorAll('.task');
 const $ulList = document.querySelectorAll('.list');
+const $textArea = document.querySelector('textArea');
 
 // LOCAL STORAGE
 const setLocalStorage = (dbTask) => localStorage.setItem('db_task', JSON.stringify(dbTask));
 const getLocalStorage = () => JSON.parse(localStorage.getItem('db_task')) ?? [];
+
+const setLocalStorageTextArea = () => localStorage.setItem('db_textArea', $textArea.value);
+const getLocalStorageTextArea = () => localStorage.getItem('db_textArea') ?? '';
 
 // LER LOCAL STORAGE
 const readTask = () => getLocalStorage();
@@ -42,9 +46,9 @@ const createElement = (ulList, value, liIndex, checked) => {
     const formEdit = document.createElement('form');
     formEdit.classList.add('formEdit');
 
-    const spanText = document.createElement('span');
-    spanText.textContent = value;
-    spanText.classList.add('spanText');
+    const divText = document.createElement('div');
+    divText.textContent = value;
+    divText.classList.add('divText');
 
     const divButtons = document.createElement('div');
     divButtons.classList.add('divButtons');
@@ -61,18 +65,21 @@ const createElement = (ulList, value, liIndex, checked) => {
     liElement.appendChild(checkBox);
     divButtons.appendChild(editButton);
     divButtons.appendChild(deleteButton);
-    formEdit.append(spanText);
+    formEdit.append(divText);
     formEdit.appendChild(divButtons);
     liElement.append(formEdit);
     ulList.appendChild(liElement);
 
     if (checked) {
-        spanText.classList.add('checkedStyle');
+        divText.classList.add('checkedStyle');
         checkBox.checked = true;
     }
 
     return liElement;
 }
+
+// VALORES DE ENTRADA TEXT AREA
+$textArea.addEventListener('input', setLocalStorageTextArea);
 
 // CARREGAR DOM
 document.addEventListener('DOMContentLoaded', () => {
@@ -83,6 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
             createElement(ulList, task.value, task.liIndex, task.checked);
         });
     });
+
+    $textArea.value = getLocalStorageTextArea();
 });
 
 // EVENTO CRIAR ELEMENTOS DINÂMICOS
@@ -120,12 +129,12 @@ document.addEventListener('click', (event) => {
     const liAttribute = liElement.getAttribute('data-index');
 
     const checkBox = liElement.querySelector('.checkBox');
-    const spanText = liElement.querySelector('.spanText');
+    const divText = liElement.querySelector('.divText');
 
     // EVENTO CHECKBOX
     if (target.classList.contains('checkBox')) {
         if (target.checked) {
-            spanText.classList.add('checkedStyle');
+            divText.classList.add('checkedStyle');
 
             dbTask.forEach((task, index) => {
                 if (notePadAttribute == task.index && liAttribute == task.liIndex) {
@@ -134,7 +143,7 @@ document.addEventListener('click', (event) => {
                 }
             });
         } else {
-            spanText.classList.remove('checkedStyle');
+            divText.classList.remove('checkedStyle');
 
             dbTask.forEach((task, index) => {
                 if (notePadAttribute == task.index && liAttribute == task.liIndex) {
@@ -156,10 +165,10 @@ document.addEventListener('click', (event) => {
         input.classList.add('task');
         input.setAttribute('data-editable', 'true');
 
-        // SUBSTITUIR SPAN POR INPUT TEXT 
+        // SUBSTITUIR DIV POR INPUT TEXT 
         if (!editableElement) {
-            input.value = spanText.textContent;
-            formEdit.replaceChild(input, spanText);
+            input.value = divText.textContent;
+            formEdit.replaceChild(input, divText);
             checkBox.style.display = 'none';
 
             target.style.backgroundImage = 'url(Media/done_FILL0_wght400_GRAD0_opsz24.svg)';
@@ -170,16 +179,16 @@ document.addEventListener('click', (event) => {
                 input.focus();
             }, 1);
 
-            // SUBSTITUIR INPUT TEXT POR SPAN
+            // SUBSTITUIR INPUT TEXT POR DIV
         } else {
             let value = editableElement.value.trim();
 
             if (value) {
-                const spanText = document.createElement('span');
-                spanText.textContent = value;
-                spanText.classList.add('spanText');
+                const divText = document.createElement('div');
+                divText.textContent = value;
+                divText.classList.add('divText');
 
-                formEdit.replaceChild(spanText, editableElement);
+                formEdit.replaceChild(divText, editableElement);
                 checkBox.checked = false;
                 checkBox.style.display = 'block';
 
@@ -209,7 +218,7 @@ document.addEventListener('click', (event) => {
 
                     deleteConfirm && (deleteTask(index), liElement.remove());
                 } else {
-                    let deleteConfirm = confirm(`Você deseja excluir a tarefa ${spanText.innerText}?`);
+                    let deleteConfirm = confirm(`Você deseja excluir a tarefa ${divText.innerText}?`);
 
                     deleteConfirm && (deleteTask(index), liElement.remove());
                 }

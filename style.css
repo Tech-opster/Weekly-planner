@@ -9,6 +9,8 @@
          -8px 8px 8px rgba(0,0,0,0.25);
 
     --ff: 'Playpen Sans';
+
+    --fs: 1rem;
 }
 
 * {
@@ -68,7 +70,7 @@ main {
 }
 
 .schedule .notePad {
-    max-width: 280px;
+    max-width: 25vw;
     min-width: 180px;
     min-height: 250px;
 }
@@ -79,6 +81,8 @@ main {
     flex-direction: column;
     align-items: center;
     flex: 1;
+    gap: 10px;
+    font-size: var(--ff);
     position: relative;
     border-radius: 5px;
 }
@@ -98,14 +102,12 @@ main {
 .divTitle{
     width: 100%;
     text-align: center;
-    margin: 0px 0px 10px 0px;
     font-size: 1.5rem;
     border-radius: 5px;
     box-shadow: var(--bs);
 }
 
 .form {
-    margin-bottom: 10px;
     width: 100%;
     display: flex;
     gap: 0.5vw;
@@ -169,8 +171,7 @@ main {
     display: flex;
     align-items: center;
     gap: 5px;
-    font-family: var(--ff);
-    word-break: break-all;
+    font-family: var(--ff);    
     border-radius: 5px;
     box-shadow: var(--bs);
 }
@@ -208,16 +209,22 @@ main {
  }
 
  .formEdit {
-    width: 100%;
+    width: calc(100% - 37px);
     display: flex;
     align-items: center;
+    flex: 1;
     gap: 5px;
+ }
+
+ .divText {
+    width: calc(100% - 53px);
+    flex: 1;
+    word-wrap: break-word;
+    hyphens: auto;
  }
 
 .divButtons {
     display: flex;
-    justify-content: end;
-    flex: 1;
     gap: 5px;
 }
 
@@ -266,19 +273,15 @@ main {
     font-size: 2rem;
 }
 
-#formNotes {
-    width: 100%;
-    height: 100%;
-}
-
 #textArea {
     padding: 10px;
     width: 100%;
-    height: calc(100% - 58px);
+    flex: 1;
     border: none;
     outline: none;
     resize: none;
     font-family: var(--ff);
+    font-size: var(--ff);
     border-radius: 5px;
     background-color: #ecd6c0;
     box-shadow: var(--bs);
