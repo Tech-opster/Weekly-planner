@@ -110,7 +110,7 @@ main {
 .form {
     width: 100%;
     display: flex;
-    gap: 0.5vw;
+    gap: 5px;
 }
 
 .task, .addButton, .checkBox, .editButton, .deleteButton {
